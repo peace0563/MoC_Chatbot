@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block body %}
+<section id="main">
+  <h1 style="color:cadetblue; padding-top:3rem;">Add <span style="color:navy;">Query</span></h1>
+  <br>
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Query</span>
+        </div>
+        <textarea class="form-control" aria-label="With textarea"></textarea>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Remark</span>
+        </div>
+        <textarea class="form-control" aria-label="With textarea"></textarea>
+      </div>
+    </div>
+  </div>
+
+</section>
+<section id="but">
+  <div class="row">
+    <div class="col-lg-6">
+      <button type="button" class="btn btn-primary">Add Query</button>
+    </div>
+    <div class="col-lg-6">
+
+    </div>
+  </div>
+</section>
+{% endblock %}

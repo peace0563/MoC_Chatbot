@@ -2,6 +2,31 @@ from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 from chatterbot.trainers import ChatterBotCorpusTrainer
 import json
+from dao import Executionary
+
+
+def train_bot(chatbot):
+    data = json.load(open('training_data/queries.json'))
+    unstruct_mongo_queries = Executionary.Executionary().get_all_data("queries")
+    struct_mongo_queries = []
+    for query in unstruct_mongo_queries:
+        struct_mongo_queries.append([query["query"], query["remark"]])
+
+    total_queries = data["real_queries"] + \
+        data["custom_queries"] + struct_mongo_queries
+
+    trainer = ListTrainer(chatbot, show_training_progress=False)
+    for ele in total_queries:
+        trainer.train(ele)
+
+    # Training with English Corpus Data
+    trainer_corpus = ChatterBotCorpusTrainer(
+        chatbot, show_training_progress=False)
+    trainer_corpus.train(
+        "chatterbot.corpus.english.greetings",
+        "chatterbot.corpus.english.conversations"
+    )
+
 
 # Creating ChatBot Instance
 chatbot = ChatBot(
@@ -17,16 +42,4 @@ chatbot = ChatBot(
     database_uri='sqlite:///database.sqlite3'
 )
 
-data = json.load(open('training_data/queries.json'))
-total_queries = data["real_queries"] + data["custom_queries"]
-
-trainer = ListTrainer(chatbot, show_training_progress=False)
-for ele in total_queries:
-    trainer.train(ele)
-
-# Training with English Corpus Data
-trainer_corpus = ChatterBotCorpusTrainer(chatbot, show_training_progress=False)
-trainer_corpus.train(
-    "chatterbot.corpus.english.greetings",
-    "chatterbot.corpus.english.conversations"
-)
+train_bot(chatbot)

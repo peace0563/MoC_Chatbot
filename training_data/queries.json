@@ -297,6 +297,10 @@
     [
       "How can I contact IIC?",
       "Check the below link - <br><a href='https://iic.mic.gov.in/assets/html/Newtopic1.html' target='_blank'>https://iic.mic.gov.in/assets/html/Newtopic1.html<a>"
+    ],
+    [
+      "where is chatbot Dashboard ?",
+      "Check the below link - <br><a href='https://peace0563.pythonanywhere.com/dashboard/login' target='_blank'>Dashboard<a>"
     ]
   ]
 }
