@@ -1,6 +1,8 @@
 from dao import Executionary
 import bcrypt
 from config import systemConfig
+import jwt
+import uuid
 
 
 class Dashboard:
@@ -90,10 +92,12 @@ class Dashboard:
         try:
             user = input["username"]
             passw = input["password"]
-
-            if type(user) != str:
+            acc_token = input["access_token"]
+            if type(user) != str or type(passw) != str or type(acc_token) != str:
                 raise TypeError
-            if user == "":
+            if user == "" or passw == "" or acc_token == "":
+                raise ValueError
+            if acc_token != systemConfig.access_token:
                 raise ValueError
 
         except TypeError:
@@ -103,7 +107,8 @@ class Dashboard:
             response = self.create_error_msg("Key not passed")
 
         except ValueError:
-            response = self.create_error_msg("Invalid input")
+            response = self.create_error_msg(
+                "Invalid input or Invalid Access-token")
 
         except Exception as e:
             response = self.create_error_msg(str(e))
@@ -129,7 +134,6 @@ class Dashboard:
         try:
             query = input["query"]
             remark = input["remark"]
-
             if type(remark) != str or type(query) != str:
                 raise TypeError
             if remark == "" or query == "":
@@ -148,7 +152,8 @@ class Dashboard:
             response = self.create_error_msg(str(e))
         else:
             try:
-                data = {"query": query, "remark": remark}
+                q_id = str(uuid.uuid4())
+                data = {"q_id": q_id, "query": query, "remark": remark}
                 self.executionar.insert_data("queries", data)
             except Exception as e:
                 response = self.create_error_msg(str(e))
@@ -159,9 +164,9 @@ class Dashboard:
 
     def delete_query(self, input):
         try:
-            query_id = input["query_id"]
+            query_id = input["q_ids"]
 
-            if type(query_id) != str:
+            if type(query_id) != list:
                 raise TypeError
             if query_id == "":
                 raise ValueError
@@ -179,12 +184,12 @@ class Dashboard:
             response = self.create_error_msg(str(e))
         else:
             try:
-                self.executionar.remove_data("queries", "query_id", query_id)
+                self.executionar.remove_data("queries", "q_id", query_id)
             except Exception as e:
                 response = self.create_error_msg(str(e))
             else:
                 response = self.create_success_response(
-                    [], msg="query deleted successfully")
+                    [], msg="queries deleted successfully")
         return response
 
     def list_query(self):

@@ -56,4 +56,4 @@ class Executionary:
 
     def remove_data(self, collection, id, value):
 
-        self.database[collection].delete_one({id: {"$eq": value}})
+        self.database[collection].delete_many({id: {"$in": value}})

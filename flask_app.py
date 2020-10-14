@@ -29,6 +29,10 @@ def token_check(func):
     @wraps(func)
     def decorated(*args, **kwargs):
         form_data = request.get_json(force=True)
+        try:
+            form_data["jwt_token"] = session["jwt_token"]
+        except KeyError:
+            form_data["jwt_token"] = None
         status = dashboard_obj.auth_request(form_data)
         if status == 'success':
             form_data.pop("jwt_token")
@@ -86,9 +90,11 @@ def login():
 @app.route('/dashboard/register', methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
-
         form_data = {
-            "username": request.form['username'], "password": request.form['password']}
+            "username": request.form['username'],
+            "password": request.form['password'],
+            "access_token": request.form['access_token']
+        }
         data = dashboard_obj.register_user(form_data)
 
         if data["status"] == 'success':
@@ -139,7 +145,7 @@ def logout():
 
 @app.route('/dashboard/delete_query', methods=['POST'])
 @token_check
-def delete_query(status, form_data):
+def delete_query(form_data):
     output_json = {}
 
     data = dashboard_obj.delete_query(form_data)
@@ -154,9 +160,8 @@ def delete_query(status, form_data):
 
 @app.route('/dashboard/add_query', methods=['POST'])
 @token_check
-def add_query(status, form_data):
+def add_query(form_data):
     output_json = {}
-
     data = dashboard_obj.add_query(form_data)
 
     output_json = {
@@ -169,7 +174,7 @@ def add_query(status, form_data):
 
 @app.route('/dashboard/list_query', methods=['POST'])
 @token_check
-def list_query(status, form_data):
+def list_query(form_data):
     output_json = {}
 
     data = dashboard_obj.list_query()

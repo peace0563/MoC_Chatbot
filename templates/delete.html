@@ -3,99 +3,70 @@
 <section id="del">
   <h1 style="color:navy; padding-top:1rem;">Delete<span style="color:cadetblue;">Query</span></h1>
   <br>
-  <div class="row">
-    <div class="col-lg-6">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">
-            <div class="form-check">
-              <input class="form-check-input position-static" type="checkbox" id="blankCheckbox" value="option1"
-                aria-label="...">
-            </div> Query1
-          </span>
-        </div>
-        <textarea class="form-control" aria-label="With textarea"></textarea>
-      </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-
-          <span class="input-group-text">
-            <div class="form-check">
-              <input class="form-check-input position-static" type="checkbox" id="blankCheckbox" value="option1"
-                aria-label="...">
-            </div>Query2
-          </span>
-        </div>
-        <textarea class="form-control" aria-label="With textarea"></textarea>
-      </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">
-            <div class="form-check">
-              <input class="form-check-input position-static" type="checkbox" id="blankCheckbox" value="option1"
-                aria-label="...">
-            </div>Query3
-          </span>
-        </div>
-        <textarea class="form-control" aria-label="With textarea"></textarea>
-      </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">
-            <div class="form-check">
-              <input class="form-check-input position-static" type="checkbox" id="blankCheckbox" value="option1"
-                aria-label="...">
-            </div>Query4
-          </span>
-        </div>
-        <textarea class="form-control" aria-label="With textarea"></textarea>
-      </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">
-            <div class="form-check">
-              <input class="form-check-input position-static" type="checkbox" id="blankCheckbox" value="option1"
-                aria-label="...">
-            </div>Query5
-          </span>
-        </div>
-        <textarea class="form-control" aria-label="With textarea"></textarea>
-      </div>
-    </div>
-    <div class="col-lg-6">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">Answer</span>
-        </div>
-        <textarea class="form-control" aria-label="With textarea"></textarea>
-      </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">Query?</span>
-        </div>
-        <textarea class="form-control" aria-label="With textarea"></textarea>
-      </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">Query?</span>
-        </div>
-        <textarea class="form-control" aria-label="With textarea"></textarea>
-      </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">Query?</span>
-        </div>
-        <textarea class="form-control" aria-label="With textarea"></textarea>
-      </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">Query?</span>
-        </div>
-        <textarea class="form-control" aria-label="With textarea"></textarea>
-      </div>
-    </div>
-  </div>
 </section>
 <br>
-<button type="button" class="btn btn-primary">Delete</button>
+<button type="button" id="delete_query_btn" class="btn btn-primary">Delete</button>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<script>
+  $("#del").ready(function () {
+    $.ajax({
+      url: "{{ url_for('list_query') }}",
+      type: 'post',
+      data: JSON.stringify({}),
+      contentType: "application/json;charset=utf-8",
+      dataType: 'json',
+      success: function (data) {
+        $.each(data["response"], function (index, value) {
+          $("#del").append("<div id='" + index + "row' class='row'></div>");
+
+          $("#" + index + "row").append("<div id='" + index + "col-lg-6-1' class='col-lg-6'></div>");
+          $("#" + index + "row").append("<div id='" + index + "col-lg-6-2' class='col-lg-6'></div>");
+
+          $("#" + index + "col-lg-6-1").append("<div id='" + index + "input-group-1' class='input-group'></div>");
+          $("#" + index + "input-group-1").append("<div id='" + index + "input-group-prepend-1' class='input-group-prepend'></div>");
+          $("#" + index + "input-group-prepend-1").append("<span id='" + index + "input-group-text-1' class='input-group-text'></span>");
+          $("#" + index + "input-group-text-1").append("<div id='" + index + "form-check-1' class='form-check'></div>");
+          $("#" + index + "form-check-1").append("<input class='form-check-input position-static' type='checkbox' id='query_checkbox-" + index + "' value='" + value["q_id"] + "' aria-label='...'></input>");
+          $("#" + index + "input-group-text-1").append("Query" + (index + 1));
+          $("#" + index + "input-group-1").append("<textarea class='form-control' aria-label='With textarea'>" + value["query"] + "</textarea>");
+
+          $("#" + index + "col-lg-6-2").append("<div id='" + index + "input-group-2' class='input-group'></div>");
+          $("#" + index + "input-group-2").append("<div id='" + index + "input-group-prepend-2' class='input-group-prepend'></div>");
+          $("#" + index + "input-group-prepend-2").append("<span id='" + index + "input-group-text-2' class='input-group-text'>Remark</span>");
+          $("#" + index + "input-group-2").append("<textarea class='form-control' aria-label='With textarea'>" + value["remark"] + "</textarea>");
+
+        });
+      }
+    });
+  });
+</script>
+<script>
+  $(document).ready(function () {
+    $("#delete_query_btn").click(function () {
+      var q_id_list = [];
+      var index = 0;
+      while ($('#query_checkbox-' + index).length) {
+        if ($("#query_checkbox-" + index).is(":checked")) {
+          var q_id = $("#query_checkbox-" + index).val();
+          q_id_list.push(q_id)
+        }
+        index++;
+      }
+      console.log(q_id_list)
+      $.ajax({
+        url: "{{ url_for('delete_query') }}",
+        type: 'post',
+        data: JSON.stringify({
+          q_ids: q_id_list
+        }),
+        contentType: "application/json;charset=utf-8",
+        dataType: 'json',
+        success: function (data) {
+          alert("Status: " + data["status"] + "\nMessage: " + data["message"]);
+          location.reload();
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}
