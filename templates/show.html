@@ -15,6 +15,9 @@
       contentType: "application/json;charset=utf-8",
       dataType: 'json',
       success: function (data) {
+        if (data["response"].length == 0) {
+          alert("No Custom queries found!!!")
+        }
         $.each(data["response"], function (index, value) {
           $("#del").append("<div id='" + index + "-row' class='row'></div>");
 

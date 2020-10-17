@@ -1,4 +1,4 @@
-from chatbot import chatbot
+from chatbot import MoC_Chatbot
 from flask import Flask, flash, render_template, request, jsonify, send_file, session,  make_response, url_for, redirect
 from flask_cors import CORS, cross_origin
 import dashboard
@@ -8,6 +8,7 @@ from functools import wraps
 from datetime import timedelta, datetime
 import jwt
 from config import systemConfig
+import os
 
 dashboard_obj = dashboard.Dashboard()
 
@@ -17,6 +18,7 @@ CORS(app, supports_credentials=True)
 app.static_folder = 'static'
 app.secret_key = systemConfig.flask_secret_key
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=1440)
+moc_chatbot = MoC_Chatbot()
 
 
 @app.after_request
@@ -49,8 +51,13 @@ def home():
 
 @app.route("/get")
 def get_bot_response():
-    userText = request.args.get('msg')
-    return str(chatbot.get_response(userText))
+    try:
+        userText = request.args.get('msg')
+        remark = str(moc_chatbot.chatbot.get_response(userText))
+    except NameError:
+        remark = "Chatbot is updating, please wait..."
+
+    return remark
 
 
 @app.route("/dashboard/login", methods=['POST', 'GET'])
@@ -183,6 +190,25 @@ def list_query(form_data):
         "status":   data['status'],
         "response": data['response'],
         "message":  data['message']
+    }
+    return jsonify(output_json)
+
+
+@app.route('/dashboard/reload', methods=['POST'])
+@token_check
+def reload(form_data):
+    global moc_chatbot
+    del moc_chatbot
+
+    if os.path.exists("." + os.path.sep + "database.sqlite3"):
+        os.remove("." + os.path.sep + "database.sqlite3")
+
+    moc_chatbot = MoC_Chatbot()
+
+    output_json = {
+        "status":   "success",
+        "response": [],
+        "message":  "Chatbot Reload Complete"
     }
     return jsonify(output_json)
 

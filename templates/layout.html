@@ -42,6 +42,9 @@
                     <button onclick="list()" type="button" class="btn btn-primary">List Query</button>
                 </li>
                 <li class="nav-item">
+                    <button id="reload-btn" type="button" class="btn btn-primary">Reload ChatBot</button>
+                </li>
+                <li class="nav-item">
                     <button onclick="logout()" type="button" class="btn btn-primary">Logout</button>
                 </li>
             </ul>
@@ -64,17 +67,35 @@
     {% block body %}{% endblock %}
     <script type="text/javascript">
         function add() {
-            location.replace("{{ url_for('dash_add') }}");
+            location.assign("{{ url_for('dash_add') }}");
         }
         function del() {
-            location.replace("{{ url_for('dash_delete') }}");
+            location.assign("{{ url_for('dash_delete') }}");
         }
         function list() {
-            location.replace("{{ url_for('dash_show') }}");
+            location.assign("{{ url_for('dash_show') }}");
         }
         function logout() {
-            location.replace("{{ url_for('logout') }}");
+            location.assign("{{ url_for('logout') }}");
         }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#reload-btn").click(function () {
+                alert("Process has been started, Wait for success message");
+                $.ajax({
+                    url: "{{ url_for('reload') }}",
+                    type: 'post',
+                    data: JSON.stringify({}),
+                    contentType: "application/json;charset=utf-8",
+                    dataType: 'json',
+                    success: function (data) {
+                        alert("Status: " + data["status"] + "\nMessage: " + data["message"]);
+                        location.reload();
+                    }
+                });
+            });
+        });
     </script>
 </body>
 
